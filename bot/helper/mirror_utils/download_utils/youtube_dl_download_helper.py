@@ -1,6 +1,6 @@
 from .download_helper import DownloadHelper
 import time
-from youtube_dl import YoutubeDL, DownloadError
+from yt_dlp import YoutubeDL, DownloadError
 from bot import download_dict_lock, download_dict
 from ..status_utils.youtube_dl_download_status import YoutubeDLDownloadStatus
 import logging
@@ -17,7 +17,7 @@ class MyLogger:
     def debug(self, msg):
         LOGGER.debug(msg)
         # Hack to fix changing changing extension
-        match = re.search(r'.ffmpeg..Merging formats into..(.*?).$', msg)
+        match = re.search(r'.Merger..Merging formats into..(.*?).$', msg)
         if match and not self.obj.is_playlist:
             newname = match.group(1)
             newname = newname.split("/")
@@ -83,7 +83,7 @@ class YoutubeDLHelper(DownloadHelper):
                     self.last_downloaded = tbyte * progress
                     self.downloaded_bytes += chunk_size
                 else:
-                    self.size = d['total_bytes']
+                    self.size = tbyte
                     self.downloaded_bytes = d['downloaded_bytes']
                 try:
                     self.progress = (self.downloaded_bytes / self.size) * 100
@@ -152,7 +152,7 @@ class YoutubeDLHelper(DownloadHelper):
             self.opts['ignoreerrors'] = True
         self.__onDownloadStart()
         self.extractMetaData(link, qual, name)
-        LOGGER.info(f"Downloading with YT-DL: {link}")
+        LOGGER.info(f"Downloading with YT-DLP: {link}")
         self.__gid = f"{self.vid_id}{self.__listener.uid}"
         if qual == "audio":
           self.opts['format'] = 'bestaudio/best'
